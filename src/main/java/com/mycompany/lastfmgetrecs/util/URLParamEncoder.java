@@ -1,4 +1,4 @@
-package com.mycompany.lastfmgetrecs;
+package com.mycompany.lastfmgetrecs.util;
 
 public class URLParamEncoder {
 

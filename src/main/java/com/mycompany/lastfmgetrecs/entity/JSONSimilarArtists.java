@@ -1,5 +1,8 @@
-package com.mycompany.lastfmgetrecs;
+package com.mycompany.lastfmgetrecs.entity;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class JSONSimilarArtists {
 
     JSONArtist[] artist = null;
@@ -11,5 +14,6 @@ public class JSONSimilarArtists {
     public void setArtist(JSONArtist[] artist) {
         this.artist = artist;
     }
+
 
 }
