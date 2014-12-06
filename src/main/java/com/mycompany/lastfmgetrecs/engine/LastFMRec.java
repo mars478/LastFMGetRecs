@@ -21,16 +21,20 @@ import net.dontdrinkandroot.lastfm.api.model.paginatedresult.PaginatedResult;
 import net.dontdrinkandroot.lastfm.api.ws.DefaultLastfmWebServices;
 import net.dontdrinkandroot.lastfm.api.ws.LastfmWebServices;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LastFMRec {
+
+    final static Logger logger = LoggerFactory.getLogger(LastFMRec.class);
 
     private final int SIMILAR_ARTISTS = 1;
     private final int TOP_TRACKS = 2;
     private final int USER_ARTIST_TRACKS = 3;
 
-    private final int WELL_KNOWN_LIMIT = 5;
-    private final int ARTIST_TOP_LIMIT = 30;
-    private final int ARTIST_RECS_LIMIT = 5;
+    private int WELL_KNOWN_LIMIT = 5;
+    private int ARTIST_TOP_LIMIT = 30;
+    private int ARTIST_RECS_LIMIT = 5;
 
     String apiKey = "1bc96f65cb9bfdcdcfdc4ded472f8c71";
     String apiSecret = "3c864d2a6433b66625da441af3e6151c";
@@ -45,6 +49,13 @@ public class LastFMRec {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public LastFMRec initLimits(int wellKnownLimit, int artistTopLimit, int artistRecsLimit) {
+        WELL_KNOWN_LIMIT = (wellKnownLimit > 0) ? wellKnownLimit : WELL_KNOWN_LIMIT;
+        ARTIST_TOP_LIMIT = (artistTopLimit > 0) ? artistTopLimit : ARTIST_TOP_LIMIT;
+        ARTIST_RECS_LIMIT = (artistRecsLimit > 0) ? artistRecsLimit : ARTIST_RECS_LIMIT;
+        return this;
     }
 
     public void test(String username) throws Exception {
