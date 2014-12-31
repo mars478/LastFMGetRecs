@@ -21,9 +21,8 @@ public class URLParamEncoder {
     }
 
     private static boolean isUnsafe(char ch) {
-        if (ch > 128 || ch < 0) {
-            return true;
-        }
-        return " %$&+,/:;=?@<>#%".indexOf(ch) >= 0;
+        return (ch > 128 || ch < 0)
+                ? true
+                : " %$&+,/:;=?@<>#%".indexOf(ch) >= 0;
     }
 }

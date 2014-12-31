@@ -8,14 +8,14 @@ public class Main {
     public static void main(String[] args) {
         try {
             if (args != null && args.length == 1) {
-                new LastFMRec().test(Period.OVERALL, args[0]);
+                new LastFMRec().process(Period.OVERALL, args[0]);
             } else if (args != null && args.length > 1) {
-                new LastFMRec().test(Period.OVERALL, args);
+                new LastFMRec().process(Period.OVERALL, args);
             } else {
-                new LastFMRec().test(Period.THREE_MONTH, "Vnv192");
+                new LastFMRec().process(Period.THREE_MONTH, "Vnv192");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 

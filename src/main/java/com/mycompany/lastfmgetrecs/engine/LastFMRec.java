@@ -47,7 +47,7 @@ public class LastFMRec {
         try {
             ws = new DefaultLastfmWebServices(apiKey, apiSecret);
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -58,32 +58,32 @@ public class LastFMRec {
         return this;
     }
 
-    public void test(String username) throws Exception {
+    public void process(String username) throws Exception {
         this.userName = username;
-        test(getTopArtist(username), null);
+        LastFMRec.this.process(getTopArtist(username), null);
     }
 
-    public void test(String... artists) throws Exception {
-        test(getArtistsFromArray(artists), null);
+    public void process(String... artists) throws Exception {
+        LastFMRec.this.process(getArtistsFromArray(artists), null);
     }
 
-    public void test(Period period, String username) throws Exception {
+    public void process(Period period, String username) throws Exception {
         this.userName = username;
-        test(getTopArtist(username), period);
+        LastFMRec.this.process(getTopArtist(username), period);
     }
 
-    public void test(Period period, String... artists) throws Exception {
-        test(getArtistsFromArray(artists), period);
+    public void process(Period period, String... artists) throws Exception {
+        LastFMRec.this.process(getArtistsFromArray(artists), period);
     }
 
-    private void test(List<Artist> artists, Period newPeriod) {
+    private void process(List<Artist> artists, Period newPeriod) {
         period = (newPeriod == null) ? Period.OVERALL : newPeriod;
         try {
             for (JSONTopTrack track : getRecsTracks(getRecsArtists(artists, ARTIST_RECS_LIMIT))) {
                 System.out.println("\t" + track.getArtist().getName() + "-" + track.getName());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(System.err);
         }
     }
 
@@ -92,7 +92,6 @@ public class LastFMRec {
         for (Artist art : artists) {
             tracks.addAll(getTopTracks(art));
         }
-
         return tracks;
     }
 
@@ -108,11 +107,6 @@ public class LastFMRec {
         List<Artist> topArtists = new ArrayList<>();
         PaginatedResult<List<Artist>> result = ws.fetch(User.getTopArtists(userName, period, ARTIST_TOP_LIMIT, null));
         topArtists.addAll(result.getEntries());
-
-        for (Artist art : topArtists) {
-            System.out.println("\t" + art.getName());
-        }
-
         return topArtists;
     }
 
@@ -160,8 +154,7 @@ public class LastFMRec {
                     break;
                 }
             } catch (Exception e) {
-                System.out.println("wtf");
-                e.printStackTrace();
+                e.printStackTrace(System.err);
             }
         }
 
@@ -203,66 +196,39 @@ public class LastFMRec {
     }
 
     protected List<JSONTopTrack> getUserArtistTracks(Artist artist) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JSONArtistTrack trck = null;
-        try {
-            trck = mapper.readValue(getJSON(artist, USER_ARTIST_TRACKS), JSONArtistTrack.class);
-        } catch (Exception ex) {
-            System.out.println("getUserArtistTracks exception:");
-            ex.printStackTrace();
-        }
-
-        if (trck == null || trck.getArtisttracks() == null || trck.getArtisttracks().getTrack() == null || trck.getArtisttracks().getTrack().length == 0) {
-            return new ArrayList<>();
-        }
-
         //http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=cher&api_key=1bc96f65cb9bfdcdcfdc4ded472f8c71&format=json
         try {
-            return trck.getTracks(artist);//trck.getArtisttracks();
+            JSONArtistTrack trck = new ObjectMapper().readValue(getJSON(artist, USER_ARTIST_TRACKS), JSONArtistTrack.class);
+            if (!(trck == null || trck.getArtisttracks() == null || trck.getArtisttracks().getTrack() == null || trck.getArtisttracks().getTrack().length == 0)) {
+                return trck.getTracks(artist);
+            }
         } catch (Exception e) {
-            return new ArrayList<>();
+            e.printStackTrace(System.err);
         }
+        return new ArrayList<>();
     }
 
     protected List<JSONTopTrack> getTopTracks(Artist artist) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JSONTopTrackList trck = null;
-        try {
-            trck = mapper.readValue(getJSON(artist, TOP_TRACKS), JSONTopTrackList.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
         //http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=cher&api_key=1bc96f65cb9bfdcdcfdc4ded472f8c71&format=json
         try {
-            return trck.getTracks();
+            return new ObjectMapper().readValue(getJSON(artist, TOP_TRACKS), JSONTopTrackList.class).getTracks();
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             return null;
         }
     }
 
     protected List<Artist> getSimilar(Artist artist) {
-        ObjectMapper mapper = new ObjectMapper();
-
-        JSONArtistList art = null;
-        try {
-            art = mapper.readValue(getJSON(artist, SIMILAR_ARTISTS), JSONArtistList.class);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
         //http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=cher&api_key=1bc96f65cb9bfdcdcfdc4ded472f8c71&format=json
         try {
-            return art.getLastFMArtistList();
+            return new ObjectMapper().readValue(getJSON(artist, SIMILAR_ARTISTS), JSONArtistList.class).getLastFMArtistList();
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             return null;
         }
     }
 
     private String getJSON(Artist art, int request) throws Exception {
-
         String url = "http://ws.audioscrobbler.com/2.0/";
         if (request == SIMILAR_ARTISTS) {
             url = url + "?method=artist.getsimilar&artist=" + URLParamEncoder.encode(art.getName()) + "&api_key=" + apiKey + "&format=json&autocorrect=1";
@@ -288,8 +254,6 @@ public class LastFMRec {
                 response.append(inputLine);
             }
         }
-        System.out.println("response:" + response.toString());
-
         return response.toString();
     }
 }

@@ -53,14 +53,14 @@ public class LastFMRecTest {
     @Test
     public void doTest1() throws Exception {
         System.out.println("doTest1");
-        instance.test("vnv192");
+        instance.process("vnv192");
     }
 
     @Test
     public void doTest2() throws Exception {
         System.out.println("doTest2");
         try {
-            instance.test((String) null);
+            instance.process((String) null);
             fail("Exception excepted");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -71,7 +71,7 @@ public class LastFMRecTest {
     public void doTest3() throws Exception {
         System.out.println("doTest3");
         try {
-            instance.test("sfdsdaaaaafsdfde");
+            instance.process("sfdsdaaaaafsdfde");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }

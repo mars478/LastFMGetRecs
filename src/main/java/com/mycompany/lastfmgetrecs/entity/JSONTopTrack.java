@@ -7,13 +7,6 @@ public class JSONTopTrack {
 
     String name;
     JSONArtist artist;
-    /*String duration;
-     String playcount;
-     String listeners;
-     String mbid;
-     String url;
-     String[] streamable;
-     String image;*/
 
     public String getName() {
         return name;
